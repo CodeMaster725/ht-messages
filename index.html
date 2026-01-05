@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HT Messages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 400px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .login-box {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+
+        .login-box h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #007AFF;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-box button:hover {
+            background: #0051D5;
+        }
+
+        .login-box .secondary-btn {
+            background: #f5f5f7;
+            color: #007AFF;
+        }
+
+        .login-box .secondary-btn:hover {
+            background: #e8e8e8;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: none;
+            height: 100vh;
+            background: #fff;
+        }
+
+        .main-container.active {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 350px;
+            background: #f5f5f7;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                border-right: none;
+            }
+
+            .sidebar.hide-mobile {
+                display: none;
+            }
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 28px;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .tab.active {
+            background: #007AFF;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #d0d0d0;
+        }
+
+        .tab.active:hover {
+            background: #0051D5;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f5f5f7;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .new-chat-btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-contact-btn {
+            background: #34C759;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .contacts, .conversations {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .contact {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .contact:hover {
+            background: #e8e8e8;
+        }
+
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .online-status {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #34C759;
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .online-status.offline {
+            background: #8E8E93;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .contact-phone {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .contact-actions button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .contact-actions .delete-btn {
+            background: #ff3b30;
+        }
+
+        .conversations {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .conversation:hover {
+            background: #e8e8e8;
+        }
+
+        .conversation.active {
+            background: #e0e0e0;
+        }
+
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .conversation-avatar.group {
+            background: linear-gradient(135deg, #34C759, #30D158);
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .conversation-preview {
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .chat-area {
+                width: 100%;
+                position: relative;
+            }
+
+            .chat-area.hide-mobile {
+                display: none;
+            }
+
+            #chatContainer {
+                height: 100vh !important;
+                display: flex !important;
+            }
+        }
+
+        .back-button {
+            display: none;
+            background: none;
+            border: none;
+            color: #007AFF;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .back-button {
+                display: inline-block;
+            }
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f5f5f7;
+        }
+
+        @media (max-width: 768px) {
+            .chat-header {
+                padding: 15px;
+            }
+
+            .chat-actions button {
+                font-size: 12px;
+                margin-left: 8px;
+                padding: 5px 10px;
+            }
+
+            .chat-header-name {
+                font-size: 16px;
+            }
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+            position: relative;
+        }
+
+        .chat-header-avatar.group {
+            background: linear-gradient(135deg, #34C759, #30D158);
+        }
+
+        .chat-header-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .chat-actions button {
+            background: none;
+            border: none;
+            color: #007AFF;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .chat-actions .delete-chat-btn {
+            color: #ff3b30;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Important for flexbox scrolling */
+        }
+
+        @media (max-width: 768px) {
+            .messages {
+                padding: 15px 10px;
+            }
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            max-width: 70%;
+        }
+
+        @media (max-width: 768px) {
+            .message {
+                max-width: 85%;
+            }
+
+            .message-bubble {
+                font-size: 14px;
+            }
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.sent .message-bubble {
+            background: #007AFF;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background: #e5e5ea;
+            color: #000;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .message.sent .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .message-file {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .message-file a {
+            color: inherit;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .input-area {
+                padding: 10px 15px;
+                gap: 8px;
+            }
+
+            .input-area input[type="text"] {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .input-area button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+        .input-area input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-area input[type="text"]:focus {
+            border-color: #007AFF;
+        }
+
+        .input-area button, .input-area label {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .input-area label {
+            display: inline-block;
+        }
+
+        .input-area input[type="file"] {
+            display: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+                padding: 20px;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .modal-content h3 {
+                font-size: 20px;
+            }
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-content .cancel-btn {
+            background: #f5f5f7;
+            color: #000;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f5f5f7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .member-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .member-name {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .remove-member-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .profile-section {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            .profile-section {
+                padding: 15px;
+            }
+
+            .settings-btn, .logout-btn {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+
+            .profile-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .profile-info div {
+                font-size: 12px;
+            }
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .logout-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .settings-btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+
+        .profile-picture-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #0051D5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .upload-picture-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #34C759;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .settings-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f5f5f7;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .settings-toggle label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #34C759;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>HT Messages</h1>
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button onclick="login()">Sign In</button>
+                <button class="secondary-btn" onclick="showSignup()">Create Account</button>
+            </div>
+            <div id="signupForm" style="display: none;">
+                <input type="text" id="signupName" placeholder="Display Name">
+                <input type="email" id="signupEmail" placeholder="Email">
+                <input type="password" id="signupPassword" placeholder="Password">
+                <button onclick="signup()">Create Account</button>
+                <button class="secondary-btn" onclick="showLogin()">Back to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="main-container" id="mainContainer">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>HT Messages</h2>
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('messages')">Messages</button>
+                    <button class="tab" onclick="switchTab('contacts')">Contacts</button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search" id="searchInput">
+                </div>
+                <button class="new-chat-btn" id="newChatBtn" onclick="openNewChatModal()">New Message</button>
+                <button class="add-contact-btn" id="addContactBtn" style="display: none;" onclick="openAddContactModal()">Add Contact</button>
+            </div>
+            <div class="conversations" id="conversations"></div>
+            <div class="contacts" id="contacts" style="display: none;"></div>
+            <div class="profile-section">
+                <div class="profile-info">
+                    <div class="profile-avatar" id="profileAvatar"></div>
+                    <div>
+                        <div style="font-weight: 600;" id="profileName"></div>
+                        <div style="font-size: 12px; color: #666;" id="profilePhone"></div>
+                    </div>
+                </div>
+                <div>
+                    <button class="settings-btn" onclick="openSettingsModal()">Settings</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div id="emptyChatState" class="empty-state">
+                Select a conversation to start messaging
+            </div>
+            <div id="chatContainer" style="display: none; flex-direction: column; height: 100%;">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <button class="back-button" onclick="goBackToConversations()">← Back</button>
+                        <div class="chat-header-avatar" id="chatAvatar"></div>
+                        <div class="chat-header-name" id="chatName"></div>
+                    </div>
+                    <div class="chat-actions">
+                        <button id="chatInfoBtn" onclick="showChatInfo()" style="display: none;">Info</button>
+                        <button class="delete-chat-btn" onclick="deleteChat()">Delete</button>
+                    </div>
+                </div>
+                <div class="messages" id="messages"></div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="iMessage" onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Chat Modal -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <h3>New Message</h3>
+            <select id="chatType" onchange="toggleGroupOptions()">
+                <option value="direct">Direct Message</option>
+                <option value="group">Group Chat</option>
+            </select>
+            <div id="directOptions">
+                <input type="text" id="recipientPhone" placeholder="Recipient Phone ID (+1234567890)">
+            </div>
+            <div id="groupOptions" style="display: none;">
+                <input type="text" id="groupName" placeholder="Group Name">
+                <input type="text" id="groupMembers" placeholder="Member Phone IDs (comma-separated)">
+            </div>
+            <button onclick="createChat()">Start Chat</button>
+            <button class="cancel-btn" onclick="closeNewChatModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div class="modal" id="addContactModal">
+        <div class="modal-content">
+            <h3>Add Contact</h3>
+            <input type="text" id="contactPhone" placeholder="Phone ID (+1234567890)">
+            <button onclick="addContact()">Add Contact</button>
+            <button class="cancel-btn" onclick="closeAddContactModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Group Chat Info Modal -->
+    <div class="modal" id="groupInfoModal">
+        <div class="modal-content">
+            <h3 id="groupInfoTitle">Group Info</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <div class="profile-picture-preview group" id="groupPicturePreview"></div>
+                <input type="file" id="groupPictureInput" accept="image/*" style="display: none;" onchange="handleGroupPictureSelect(event)">
+                <label for="groupPictureInput" class="upload-picture-btn" style="background: #34C759;">Change Group Photo</label>
+            </div>
+            <div style="margin: 20px 0;">
+                <h4 style="margin-bottom: 10px;">Members:</h4>
+                <div id="groupMembersList" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
+            <h4 style="margin: 15px 0 10px 0;">Add Member</h4>
+            <input type="text" id="addMemberPhone" placeholder="Phone ID (+1234567890)">
+            <button onclick="addMemberToGroup()">Add Member</button>
+            <button class="cancel-btn" onclick="closeGroupInfoModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h3>Account Settings</h3>
+            <div class="profile-picture-preview" id="settingsPicturePreview"></div>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="handleProfilePictureSelect(event)">
+            <label for="profilePictureInput" class="upload-picture-btn">Upload Profile Picture</label>
+            <input type="text" id="settingsName" placeholder="Display Name">
+            <input type="email" id="settingsEmail" placeholder="Email">
+            <div style="font-size: 12px; color: #666; margin: 10px 0;">Phone ID: <span id="settingsPhoneId"></span></div>
+            
+            <div style="margin: 20px 0; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                <h4 style="margin-bottom: 10px;">Change Password</h4>
+                <input type="password" id="currentPassword" placeholder="Current Password">
+                <input type="password" id="newPassword" placeholder="New Password (min 6 characters)">
+                <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+                <button onclick="changePassword()" style="background: #FF9500; margin-top: 10px;">Change Password</button>
+            </div>
+            
+            <div class="settings-toggle">
+                <label for="notificationToggle">Push Notifications</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notificationToggle" onchange="toggleNotifications()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <button onclick="saveSettings()">Save Changes</button>
+            <button class="cancel-btn" onclick="closeSettingsModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, getDocs, setDoc, doc, getDoc, updateDoc, serverTimestamp, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCERMHkivZF4is_SMGFOgtl8XrTyLTp6So",
+            authDomain: "ht-messages.firebaseapp.com",
+            projectId: "ht-messages",
+            storageBucket: "ht-messages.firebasestorage.app",
+            messagingSenderId: "1037109691202",
+            appId: "1:1037109691202:web:a45694fdf665fe33f5bedb",
+            measurementId: "G-42R9738571"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.auth = auth;
+        window.db = db;
+        window.currentUser = null;
+        window.currentChatId = null;
+        window.currentChatData = null;
+        window.currentTab = 'messages';
+        window.selectedProfilePicture = null;
+        window.selectedGroupPicture = null;
+        window.conversationsListener = null;
+        window.notificationsEnabled = false;
+        window.onlineUsers = new Set();
+        window.presenceListener = null;
+
+        // Update user's online status
+        window.updateOnlineStatus = async (isOnline) => {
+            if (!auth.currentUser) return;
+            
+            try {
+                await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                    online: isOnline,
+                    lastSeen: serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error updating online status:', error);
+            }
+        };
+
+        // Listen to online users
+        window.startPresenceListener = () => {
+            if (window.presenceListener) {
+                window.presenceListener();
+            }
+            
+            const q = query(collection(db, 'users'));
+            window.presenceListener = onSnapshot(q, (snapshot) => {
+                window.onlineUsers.clear();
+                snapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.online) {
+                        window.onlineUsers.add(doc.id);
+                    }
+                });
+                
+                // Update status dots without reloading entire conversation list
+                updateStatusDotsInUI();
+            });
+        };
+
+        // Update status dots in the UI
+        window.updateStatusDotsInUI = () => {
+            // Update conversation list status dots
+            document.querySelectorAll('.conversation-avatar .online-status').forEach(dot => {
+                const conversationDiv = dot.closest('.conversation');
+                if (conversationDiv) {
+                    // Find the user ID from the conversation (stored in onclick)
+                    const avatar = dot.parentElement;
+                    const isOnline = dot.classList.contains('online-status') && !dot.classList.contains('offline');
+                    // This will be updated when conversations reload naturally
+                }
+            });
+
+            // Update contact list status dots
+            document.querySelectorAll('.contact-avatar .online-status').forEach(dot => {
+                // Status will update when contacts reload naturally
+            });
+
+            // Update chat header status dot
+            const chatAvatar = document.getElementById('chatAvatar');
+            const headerStatus = chatAvatar?.querySelector('.online-status');
+            if (headerStatus && window.currentChatData?.type === 'direct') {
+                const otherUserId = window.currentChatData.participants.find(id => id !== auth.currentUser.uid);
+                if (otherUserId) {
+                    if (window.onlineUsers.has(otherUserId)) {
+                        headerStatus.classList.remove('offline');
+                    } else {
+                        headerStatus.classList.add('offline');
+                    }
+                }
+            }
+        };
+
+        // Request notification permission
+        window.requestNotificationPermission = async () => {
+            if (!("Notification" in window)) {
+                console.log("This browser does not support notifications");
+                return false;
+            }
+
+            if (Notification.permission === "granted") {
+                window.notificationsEnabled = true;
+                return true;
+            }
+
+            if (Notification.permission !== "denied") {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    window.notificationsEnabled = true;
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        // Show notification
+        window.showNotification = (title, body, chatId) => {
+            if (!window.notificationsEnabled || document.hasFocus()) {
+                return; // Don't show if app is focused
+            }
+
+            const notification = new Notification(title, {
+                body: body,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23667eea"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white" font-family="Arial">💬</text></svg>',
+                badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23667eea"/></svg>',
+                tag: chatId,
+                requireInteraction: false
+            });
+
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+        };
+
+        // Auth State Observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUser = user;
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('profileName').textContent = userData.displayName;
+                    document.getElementById('profilePhone').textContent = userData.phoneId;
+                    
+                    // Set profile avatar with picture or initial
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    if (userData.profilePicture) {
+                        profileAvatar.style.backgroundImage = `url(${userData.profilePicture})`;
+                        profileAvatar.style.backgroundSize = 'cover';
+                        profileAvatar.style.backgroundPosition = 'center';
+                        profileAvatar.textContent = '';
+                    } else {
+                        profileAvatar.textContent = userData.displayName.charAt(0).toUpperCase();
+                        profileAvatar.style.backgroundImage = 'none';
+                    }
+                    
+                    // Load user's notification preference
+                    const notificationsEnabled = userData.notificationsEnabled !== false;
+                    window.notificationsEnabled = notificationsEnabled;
+                    if (notificationsEnabled) {
+                        await requestNotificationPermission();
+                    }
+                }
+                
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContainer').classList.add('active');
+                
+                // Set user online
+                await updateOnlineStatus(true);
+                
+                // Start listening to online users
+                startPresenceListener();
+                
+                // Set user offline when page closes
+                window.addEventListener('beforeunload', () => {
+                    updateOnlineStatus(false);
+                });
+                
+                // Handle visibility change
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        updateOnlineStatus(false);
+                    } else {
+                        updateOnlineStatus(true);
+                    }
+                });
+                
+                loadConversations();
+                loadContacts();
+            } else {
+                // Set user offline on logout
+                if (window.currentUser) {
+                    await updateOnlineStatus(false);
+                }
+                
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainContainer').classList.remove('active');
+            }
+        });
+
+        // Login
+        window.login = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            }
+        };
+
+        // Signup
+        window.signup = async () => {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            if (!name || !email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            // Auto-generate phone ID
+            const phoneId = '+1' + Math.floor(Math.random() * 9000000000 + 1000000000);
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, 'users', userCredential.user.uid), {
+                    displayName: name,
+                    phoneId: phoneId,
+                    email: email,
+                    createdAt: serverTimestamp()
+                });
+                alert('Account created successfully! Your Phone ID: ' + phoneId);
+            } catch (error) {
+                console.error('Signup error:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('This email is already registered. Please login instead.');
+                } else if (error.code === 'auth/invalid-email') {
+                    alert('Invalid email address format.');
+                } else if (error.code === 'auth/weak-password') {
+                    alert('Password should be at least 6 characters.');
+                } else {
+                    alert('Signup failed: ' + error.message);
+                }
+            }
+        };
+
+        // Logout
+        window.logout = async () => {
+            await updateOnlineStatus(false);
+            signOut(auth);
+        };
+
+        window.showSignup = () => {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        };
+
+        window.showLogin = () => {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+        };
+
+        // Load Conversations
+        window.loadConversations = () => {
+            // Unsubscribe from previous listener if it exists
+            if (window.conversationsListener) {
+                window.conversationsListener();
+            }
+            
+            const q = query(
+                collection(db, 'chats'),
+                where('participants', 'array-contains', auth.currentUser.uid)
+            );
+
+            window.conversationsListener = onSnapshot(q, async (snapshot) => {
+                const conversationsDiv = document.getElementById('conversations');
+                conversationsDiv.innerHTML = '';
+
+                for (const docSnap of snapshot.docs) {
+                    const chat = docSnap.data();
+                    let displayName = chat.name || 'Unknown';
+                    let otherUserId = null;
+                    let otherUserData = null;
+                    
+                    // For direct chats, get the other user's name
+                    if (chat.type === 'direct') {
+                        otherUserId = chat.participants.find(id => id !== auth.currentUser.uid);
+                        if (otherUserId) {
+                            const otherUserDoc = await getDoc(doc(db, 'users', otherUserId));
+                            if (otherUserDoc.exists()) {
+                                otherUserData = otherUserDoc.data();
+                                displayName = otherUserData.displayName;
+                            }
+                        }
+                    }
+                    
+                    const conv = document.createElement('div');
+                    conv.className = 'conversation';
+                    if (window.currentChatId === docSnap.id) conv.classList.add('active');
+                    
+                    conv.onclick = () => openChat(docSnap.id, chat, displayName);
+
+                    const avatar = document.createElement('div');
+                    avatar.className = 'conversation-avatar';
+                    
+                    // Add group class for green background
+                    if (chat.type === 'group') {
+                        avatar.classList.add('group');
+                    }
+                    
+                    // Set profile picture or initial
+                    if (chat.type === 'direct' && otherUserData?.profilePicture) {
+                        avatar.style.backgroundImage = `url(${otherUserData.profilePicture})`;
+                        avatar.style.backgroundSize = 'cover';
+                        avatar.style.backgroundPosition = 'center';
+                        avatar.textContent = '';
+                    } else if (chat.type === 'group' && chat.groupPicture) {
+                        avatar.style.backgroundImage = `url(${chat.groupPicture})`;
+                        avatar.style.backgroundSize = 'cover';
+                        avatar.style.backgroundPosition = 'center';
+                        avatar.textContent = '';
+                    } else {
+                        avatar.textContent = displayName.charAt(0).toUpperCase();
+                    }
+                    
+                    // Add online status indicator for direct chats
+                    if (chat.type === 'direct' && otherUserId) {
+                        const statusDot = document.createElement('div');
+                        statusDot.className = `online-status ${window.onlineUsers.has(otherUserId) ? '' : 'offline'}`;
+                        avatar.appendChild(statusDot);
+                    }
+
+                    const info = document.createElement('div');
+                    info.className = 'conversation-info';
+                    info.innerHTML = `
+                        <div class="conversation-name">${displayName}</div>
+                        <div class="conversation-preview">${chat.lastMessage || 'No messages yet'}</div>
+                    `;
+
+                    conv.appendChild(avatar);
+                    conv.appendChild(info);
+                    conversationsDiv.appendChild(conv);
+                }
+            });
+        };
+
+        // Open Chat
+        window.openChat = async (chatId, chatData, displayName = null) => {
+            window.currentChatId = chatId;
+            window.currentChatData = chatData;
+            document.getElementById('emptyChatState').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+
+            // Mobile view switching
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.add('hide-mobile');
+                document.querySelector('.chat-area').classList.remove('hide-mobile');
+            }
+
+            // Show/hide info button based on chat type
+            const infoBtn = document.getElementById('chatInfoBtn');
+            if (chatData.type === 'group') {
+                infoBtn.style.display = 'inline-block';
+            } else {
+                infoBtn.style.display = 'none';
+            }
+
+            let otherUserId = null;
+            let otherUserData = null;
+            
+            // If displayName not provided, determine it
+            if (!displayName) {
+                if (chatData.type === 'direct') {
+                    otherUserId = chatData.participants.find(id => id !== auth.currentUser.uid);
+                    if (otherUserId) {
+                        const otherUserDoc = await getDoc(doc(db, 'users', otherUserId));
+                        if (otherUserDoc.exists()) {
+                            otherUserData = otherUserDoc.data();
+                            displayName = otherUserData.displayName;
+                        }
+                    }
+                } else {
+                    displayName = chatData.name || 'Group Chat';
+                }
+            } else if (chatData.type === 'direct') {
+                otherUserId = chatData.participants.find(id => id !== auth.currentUser.uid);
+                if (otherUserId) {
+                    const otherUserDoc = await getDoc(doc(db, 'users', otherUserId));
+                    if (otherUserDoc.exists()) {
+                        otherUserData = otherUserDoc.data();
+                    }
+                }
+            }
+
+            document.getElementById('chatName').textContent = displayName || 'Chat';
+            const chatAvatar = document.getElementById('chatAvatar');
+            
+            // Add group class for green background
+            if (chatData.type === 'group') {
+                chatAvatar.classList.add('group');
+            } else {
+                chatAvatar.classList.remove('group');
+            }
+            
+            // Set profile picture or initial in chat header
+            if (chatData.type === 'direct' && otherUserData?.profilePicture) {
+                chatAvatar.style.backgroundImage = `url(${otherUserData.profilePicture})`;
+                chatAvatar.style.backgroundSize = 'cover';
+                chatAvatar.style.backgroundPosition = 'center';
+                chatAvatar.textContent = '';
+            } else if (chatData.type === 'group' && chatData.groupPicture) {
+                chatAvatar.style.backgroundImage = `url(${chatData.groupPicture})`;
+                chatAvatar.style.backgroundSize = 'cover';
+                chatAvatar.style.backgroundPosition = 'center';
+                chatAvatar.textContent = '';
+            } else {
+                chatAvatar.textContent = (displayName || 'C').charAt(0).toUpperCase();
+                chatAvatar.style.backgroundImage = 'none';
+            }
+            
+            // Remove any existing status dot
+            const existingStatus = chatAvatar.querySelector('.online-status');
+            if (existingStatus) existingStatus.remove();
+            
+            // Add online status for direct chats
+            if (chatData.type === 'direct' && otherUserId) {
+                const statusDot = document.createElement('div');
+                statusDot.className = `online-status ${window.onlineUsers.has(otherUserId) ? '' : 'offline'}`;
+                chatAvatar.appendChild(statusDot);
+            }
+
+            const q = query(
+                collection(db, 'chats', chatId, 'messages'),
+                orderBy('timestamp', 'asc')
+            );
+
+            let isFirstLoad = true;
+            onSnapshot(q, async (snapshot) => {
+                const messagesDiv = document.getElementById('messages');
+                
+                // Track new messages for notifications
+                if (!isFirstLoad) {
+                    snapshot.docChanges().forEach(async (change) => {
+                        if (change.type === 'added') {
+                            const msg = change.doc.data();
+                            // Only notify if message is from someone else and chat is not currently open
+                            if (msg.senderId !== auth.currentUser.uid && window.currentChatId !== chatId) {
+                                // Get sender name
+                                let senderName = 'Someone';
+                                const senderDoc = await getDoc(doc(db, 'users', msg.senderId));
+                                if (senderDoc.exists()) {
+                                    senderName = senderDoc.data().displayName;
+                                }
+                                
+                                const notificationTitle = chatData.type === 'group' ? `${senderName} in ${displayName}` : senderName;
+                                const notificationBody = msg.text || '📎 Attachment';
+                                showNotification(notificationTitle, notificationBody, chatId);
+                            }
+                        }
+                    });
+                }
+                
+                messagesDiv.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const msg = doc.data();
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `message ${msg.senderId === auth.currentUser.uid ? 'sent' : 'received'}`;
+
+                    const bubble = document.createElement('div');
+                    bubble.className = 'message-bubble';
+                    
+                    if (msg.text) {
+                        bubble.textContent = msg.text;
+                    }
+                    
+                    if (msg.fileUrl) {
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'message-file';
+                        fileDiv.innerHTML = `📎 <a href="${msg.fileUrl}" target="_blank">${msg.fileName}</a>`;
+                        bubble.appendChild(fileDiv);
+                    }
+
+                    const time = document.createElement('div');
+                    time.className = 'message-time';
+                    time.textContent = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
+                    msgDiv.appendChild(bubble);
+                    msgDiv.appendChild(time);
+                    messagesDiv.appendChild(msgDiv);
+                });
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                isFirstLoad = false;
+            });
+        };
+
+        // Send Message
+        window.sendMessage = async () => {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+
+            if (!text || !window.currentChatId) return;
+
+            await addDoc(collection(db, 'chats', window.currentChatId, 'messages'), {
+                text: text,
+                senderId: auth.currentUser.uid,
+                timestamp: serverTimestamp()
+            });
+
+            await updateDoc(doc(db, 'chats', window.currentChatId), {
+                lastMessage: text,
+                lastMessageTime: serverTimestamp()
+            });
+
+            input.value = '';
+        };
+
+        window.handleKeyPress = (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        };
+
+        // New Chat Modal
+        window.openNewChatModal = () => {
+            document.getElementById('newChatModal').classList.add('active');
+        };
+
+        window.closeNewChatModal = () => {
+            document.getElementById('newChatModal').classList.remove('active');
+        };
+
+        window.toggleGroupOptions = () => {
+            const chatType = document.getElementById('chatType').value;
+            document.getElementById('directOptions').style.display = chatType === 'direct' ? 'block' : 'none';
+            document.getElementById('groupOptions').style.display = chatType === 'group' ? 'block' : 'none';
+        };
+
+        // Create Chat
+        window.createChat = async () => {
+            const chatType = document.getElementById('chatType').value;
+            const recipientPhone = document.getElementById('recipientPhone').value.trim();
+
+            if (chatType === 'direct') {
+                const usersQuery = query(collection(db, 'users'), where('phoneId', '==', recipientPhone));
+                const usersSnapshot = await getDocs(usersQuery);
+
+                if (usersSnapshot.empty) {
+                    alert('User not found with that phone ID');
+                    return;
+                }
+
+                const recipientData = usersSnapshot.docs[0].data();
+                const recipientId = usersSnapshot.docs[0].id;
+
+                const chatRef = await addDoc(collection(db, 'chats'), {
+                    type: 'direct',
+                    participants: [auth.currentUser.uid, recipientId],
+                    createdAt: serverTimestamp()
+                });
+
+                closeNewChatModal();
+                openChat(chatRef.id, { type: 'direct', participants: [auth.currentUser.uid, recipientId] }, recipientData.displayName);
+            } else {
+                const groupName = document.getElementById('groupName').value.trim();
+                const memberPhones = document.getElementById('groupMembers').value.split(',').map(p => p.trim());
+
+                if (!groupName || memberPhones.length === 0) {
+                    alert('Please enter group name and members');
+                    return;
+                }
+
+                const memberIds = [auth.currentUser.uid];
+                for (const phone of memberPhones) {
+                    const usersQuery = query(collection(db, 'users'), where('phoneId', '==', phone));
+                    const usersSnapshot = await getDocs(usersQuery);
+                    if (!usersSnapshot.empty) {
+                        memberIds.push(usersSnapshot.docs[0].id);
+                    }
+                }
+
+                const chatRef = await addDoc(collection(db, 'chats'), {
+                    type: 'group',
+                    name: groupName,
+                    participants: memberIds,
+                    createdAt: serverTimestamp()
+                });
+
+                closeNewChatModal();
+                openChat(chatRef.id, { name: groupName, type: 'group' });
+            }
+        };
+
+        window.showChatInfo = async () => {
+            if (!window.currentChatData || window.currentChatData.type !== 'group') {
+                return;
+            }
+
+            document.getElementById('groupInfoTitle').textContent = window.currentChatData.name || 'Group Chat';
+            
+            // Set group picture preview
+            const groupPreview = document.getElementById('groupPicturePreview');
+            if (window.currentChatData.groupPicture) {
+                groupPreview.style.backgroundImage = `url(${window.currentChatData.groupPicture})`;
+                groupPreview.style.backgroundSize = 'cover';
+                groupPreview.style.backgroundPosition = 'center';
+                groupPreview.textContent = '';
+            } else {
+                groupPreview.textContent = (window.currentChatData.name || 'G').charAt(0).toUpperCase();
+                groupPreview.style.backgroundImage = 'none';
+            }
+            
+            // Load members
+            const membersList = document.getElementById('groupMembersList');
+            membersList.innerHTML = '';
+
+            for (const memberId of window.currentChatData.participants) {
+                const memberDoc = await getDoc(doc(db, 'users', memberId));
+                if (memberDoc.exists()) {
+                    const memberData = memberDoc.data();
+                    
+                    const memberItem = document.createElement('div');
+                    memberItem.className = 'member-item';
+                    
+                    const avatar = document.createElement('div');
+                    avatar.className = 'member-avatar';
+                    
+                    // Set profile picture or initial
+                    if (memberData.profilePicture) {
+                        avatar.style.backgroundImage = `url(${memberData.profilePicture})`;
+                        avatar.style.backgroundSize = 'cover';
+                        avatar.style.backgroundPosition = 'center';
+                        avatar.textContent = '';
+                    } else {
+                        avatar.textContent = memberData.displayName.charAt(0).toUpperCase();
+                        avatar.style.backgroundImage = 'none';
+                    }
+                    
+                    const name = document.createElement('div');
+                    name.className = 'member-name';
+                    name.textContent = memberData.displayName + (memberId === auth.currentUser.uid ? ' (You)' : '');
+                    
+                    memberItem.appendChild(avatar);
+                    memberItem.appendChild(name);
+                    
+                    // Only show remove button if not yourself
+                    if (memberId !== auth.currentUser.uid) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-member-btn';
+                        removeBtn.textContent = 'Remove';
+                        removeBtn.onclick = () => removeMemberFromGroup(memberId, memberData.displayName);
+                        memberItem.appendChild(removeBtn);
+                    }
+                    
+                    membersList.appendChild(memberItem);
+                }
+            }
+
+            document.getElementById('groupInfoModal').classList.add('active');
+        };
+
+        window.closeGroupInfoModal = () => {
+            document.getElementById('groupInfoModal').classList.remove('active');
+            document.getElementById('addMemberPhone').value = '';
+            window.selectedGroupPicture = null;
+        };
+
+        window.handleGroupPictureSelect = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (limit to 5MB initial upload)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Please select an image smaller than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Compress the image
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Resize if too large (max 800x800)
+                        const maxSize = 800;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = (height / width) * maxSize;
+                                width = maxSize;
+                            } else {
+                                width = (width / height) * maxSize;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Compress to JPEG with quality 0.7
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        window.selectedGroupPicture = compressedBase64;
+                        const preview = document.getElementById('groupPicturePreview');
+                        preview.style.backgroundImage = `url(${compressedBase64})`;
+                        preview.style.backgroundSize = 'cover';
+                        preview.style.backgroundPosition = 'center';
+                        preview.textContent = '';
+                        
+                        // Save immediately
+                        saveGroupPicture();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.saveGroupPicture = async () => {
+            if (!window.selectedGroupPicture || !window.currentChatId) return;
+
+            try {
+                await updateDoc(doc(db, 'chats', window.currentChatId), {
+                    groupPicture: window.selectedGroupPicture
+                });
+
+                // Update local chat data
+                window.currentChatData.groupPicture = window.selectedGroupPicture;
+                
+                // Update chat header
+                const chatAvatar = document.getElementById('chatAvatar');
+                chatAvatar.style.backgroundImage = `url(${window.selectedGroupPicture})`;
+                chatAvatar.style.backgroundSize = 'cover';
+                chatAvatar.style.backgroundPosition = 'center';
+                chatAvatar.textContent = '';
+
+                alert('Group photo updated!');
+                window.selectedGroupPicture = null;
+            } catch (error) {
+                console.error('Save group picture error:', error);
+                alert('Failed to update group photo: ' + error.message);
+            }
+        };
+
+        window.addMemberToGroup = async () => {
+            const phoneId = document.getElementById('addMemberPhone').value.trim();
+
+            if (!phoneId) {
+                alert('Please enter a Phone ID');
+                return;
+            }
+
+            try {
+                // Find user by phone ID
+                const usersQuery = query(collection(db, 'users'), where('phoneId', '==', phoneId));
+                const usersSnapshot = await getDocs(usersQuery);
+
+                if (usersSnapshot.empty) {
+                    alert('User not found with that Phone ID');
+                    return;
+                }
+
+                const newMemberId = usersSnapshot.docs[0].id;
+
+                // Check if user is already in the group
+                if (window.currentChatData.participants.includes(newMemberId)) {
+                    alert('This user is already in the group');
+                    return;
+                }
+
+                // Add member to group
+                const updatedParticipants = [...window.currentChatData.participants, newMemberId];
+                await updateDoc(doc(db, 'chats', window.currentChatId), {
+                    participants: updatedParticipants
+                });
+
+                // Update local chat data
+                window.currentChatData.participants = updatedParticipants;
+
+                alert('Member added successfully!');
+                document.getElementById('addMemberPhone').value = '';
+                
+                // Refresh the modal
+                closeGroupInfoModal();
+                showChatInfo();
+            } catch (error) {
+                console.error('Add member error:', error);
+                alert('Failed to add member: ' + error.message);
+            }
+        };
+
+        window.removeMemberFromGroup = async (memberId, memberName) => {
+            if (confirm(`Are you sure you want to remove ${memberName} from the group?`)) {
+                try {
+                    const updatedParticipants = window.currentChatData.participants.filter(id => id !== memberId);
+                    
+                    await updateDoc(doc(db, 'chats', window.currentChatId), {
+                        participants: updatedParticipants
+                    });
+
+                    // Update local chat data
+                    window.currentChatData.participants = updatedParticipants;
+
+                    alert('Member removed successfully!');
+                    
+                    // Refresh the modal
+                    closeGroupInfoModal();
+                    showChatInfo();
+                } catch (error) {
+                    console.error('Remove member error:', error);
+                    alert('Failed to remove member: ' + error.message);
+                }
+            }
+        };
+
+        // Delete Chat
+        window.deleteChat = async () => {
+            if (!window.currentChatId) return;
+            
+            if (confirm('Are you sure you want to delete this chat? This will remove all messages and cannot be undone.')) {
+                try {
+                    // Delete all messages in the chat
+                    const messagesQuery = query(collection(db, 'chats', window.currentChatId, 'messages'));
+                    const messagesSnapshot = await getDocs(messagesQuery);
+                    
+                    const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                    await Promise.all(deletePromises);
+                    
+                    // Delete the chat document
+                    await deleteDoc(doc(db, 'chats', window.currentChatId));
+                    
+                    // Close the chat view
+                    window.currentChatId = null;
+                    document.getElementById('emptyChatState').style.display = 'flex';
+                    document.getElementById('chatContainer').style.display = 'none';
+                    
+                    alert('Chat deleted successfully!');
+                } catch (error) {
+                    console.error('Delete chat error:', error);
+                    alert('Failed to delete chat: ' + error.message);
+                }
+            }
+        };
+
+        // Tab Switching
+        window.switchTab = (tab) => {
+            window.currentTab = tab;
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to the correct tab
+            if (tab === 'messages') {
+                tabs[0].classList.add('active');
+                document.getElementById('conversations').style.display = 'block';
+                document.getElementById('contacts').style.display = 'none';
+                document.getElementById('newChatBtn').style.display = 'block';
+                document.getElementById('addContactBtn').style.display = 'none';
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('conversations').style.display = 'none';
+                document.getElementById('contacts').style.display = 'block';
+                document.getElementById('newChatBtn').style.display = 'none';
+                document.getElementById('addContactBtn').style.display = 'block';
+            }
+        };
+
+        // Load Contacts
+        window.loadContacts = () => {
+            const q = query(
+                collection(db, 'contacts'),
+                where('userId', '==', auth.currentUser.uid)
+            );
+
+            onSnapshot(q, async (snapshot) => {
+                const contactsDiv = document.getElementById('contacts');
+                contactsDiv.innerHTML = '';
+
+                for (const docSnap of snapshot.docs) {
+                    const contact = docSnap.data();
+                    
+                    // Get contact user info
+                    const userDoc = await getDoc(doc(db, 'users', contact.contactUserId));
+                    if (!userDoc.exists()) continue;
+                    
+                    const userData = userDoc.data();
+
+                    const contactDiv = document.createElement('div');
+                    contactDiv.className = 'contact';
+
+                    const avatar = document.createElement('div');
+                    avatar.className = 'contact-avatar';
+                    
+                    // Set profile picture or initial
+                    if (userData.profilePicture) {
+                        avatar.style.backgroundImage = `url(${userData.profilePicture})`;
+                        avatar.style.backgroundSize = 'cover';
+                        avatar.style.backgroundPosition = 'center';
+                        avatar.textContent = '';
+                    } else {
+                        avatar.textContent = userData.displayName.charAt(0).toUpperCase();
+                        avatar.style.backgroundImage = 'none';
+                    }
+                    
+                    // Add online status indicator
+                    const statusDot = document.createElement('div');
+                    statusDot.className = `online-status ${window.onlineUsers.has(contact.contactUserId) ? '' : 'offline'}`;
+                    avatar.appendChild(statusDot);
+
+                    const info = document.createElement('div');
+                    info.className = 'contact-info';
+                    info.innerHTML = `
+                        <div class="contact-name">${userData.displayName}</div>
+                        <div class="contact-phone">${userData.phoneId}</div>
+                    `;
+
+                    const actions = document.createElement('div');
+                    actions.className = 'contact-actions';
+                    actions.innerHTML = `
+                        <button onclick="startChatWithContact('${contact.contactUserId}', '${userData.displayName}')">Chat</button>
+                        <button class="delete-btn" onclick="deleteContact('${docSnap.id}')">Delete</button>
+                    `;
+
+                    contactDiv.appendChild(avatar);
+                    contactDiv.appendChild(info);
+                    contactDiv.appendChild(actions);
+                    contactsDiv.appendChild(contactDiv);
+                }
+
+                if (snapshot.empty) {
+                    contactsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No contacts yet. Add some contacts to get started!</div>';
+                }
+            });
+        };
+
+        // Add Contact Modal
+        window.openAddContactModal = () => {
+            document.getElementById('addContactModal').classList.add('active');
+        };
+
+        window.closeAddContactModal = () => {
+            document.getElementById('addContactModal').classList.remove('active');
+            document.getElementById('contactPhone').value = '';
+        };
+
+        // Add Contact
+        window.addContact = async () => {
+            const phoneId = document.getElementById('contactPhone').value.trim();
+
+            if (!phoneId) {
+                alert('Please enter a Phone ID');
+                return;
+            }
+
+            try {
+                // Find user by phone ID
+                const usersQuery = query(collection(db, 'users'), where('phoneId', '==', phoneId));
+                const usersSnapshot = await getDocs(usersQuery);
+
+                if (usersSnapshot.empty) {
+                    alert('User not found with that Phone ID');
+                    return;
+                }
+
+                const contactUserId = usersSnapshot.docs[0].id;
+
+                if (contactUserId === auth.currentUser.uid) {
+                    alert('You cannot add yourself as a contact');
+                    return;
+                }
+
+                // Check if contact already exists
+                const contactsQuery = query(
+                    collection(db, 'contacts'),
+                    where('userId', '==', auth.currentUser.uid),
+                    where('contactUserId', '==', contactUserId)
+                );
+                const existingContacts = await getDocs(contactsQuery);
+
+                if (!existingContacts.empty) {
+                    alert('This contact already exists');
+                    return;
+                }
+
+                // Add contact
+                await addDoc(collection(db, 'contacts'), {
+                    userId: auth.currentUser.uid,
+                    contactUserId: contactUserId,
+                    createdAt: serverTimestamp()
+                });
+
+                alert('Contact added successfully!');
+                closeAddContactModal();
+            } catch (error) {
+                console.error('Add contact error:', error);
+                alert('Failed to add contact: ' + error.message);
+            }
+        };
+
+        // Delete Contact
+        window.deleteContact = async (contactId) => {
+            if (confirm('Are you sure you want to delete this contact?')) {
+                try {
+                    await deleteDoc(doc(db, 'contacts', contactId));
+                } catch (error) {
+                    alert('Failed to delete contact: ' + error.message);
+                }
+            }
+        };
+
+        // Start Chat with Contact
+        window.startChatWithContact = async (contactUserId, contactName) => {
+            try {
+                // Check if chat already exists
+                const q1 = query(
+                    collection(db, 'chats'),
+                    where('type', '==', 'direct'),
+                    where('participants', 'array-contains', auth.currentUser.uid)
+                );
+                
+                const chatsSnapshot = await getDocs(q1);
+                let existingChatId = null;
+
+                chatsSnapshot.forEach((doc) => {
+                    const chat = doc.data();
+                    if (chat.participants.includes(contactUserId)) {
+                        existingChatId = doc.id;
+                    }
+                });
+
+                if (existingChatId) {
+                    // Open existing chat
+                    const chatDoc = await getDoc(doc(db, 'chats', existingChatId));
+                    openChat(existingChatId, chatDoc.data(), contactName);
+                    switchTab('messages');
+                } else {
+                    // Create new chat
+                    const chatRef = await addDoc(collection(db, 'chats'), {
+                        type: 'direct',
+                        participants: [auth.currentUser.uid, contactUserId],
+                        createdAt: serverTimestamp()
+                    });
+
+                    openChat(chatRef.id, { type: 'direct', participants: [auth.currentUser.uid, contactUserId] }, contactName);
+                    switchTab('messages');
+                }
+            } catch (error) {
+                console.error('Start chat error:', error);
+                alert('Failed to start chat: ' + error.message);
+            }
+        };
+
+        // Settings Modal
+        window.openSettingsModal = async () => {
+            const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                document.getElementById('settingsName').value = userData.displayName;
+                document.getElementById('settingsEmail').value = userData.email;
+                document.getElementById('settingsPhoneId').textContent = userData.phoneId;
+                
+                // Set notification toggle
+                const notificationsEnabled = userData.notificationsEnabled !== false; // Default to true
+                document.getElementById('notificationToggle').checked = notificationsEnabled;
+                window.notificationsEnabled = notificationsEnabled;
+                
+                // Set preview picture
+                const preview = document.getElementById('settingsPicturePreview');
+                if (userData.profilePicture) {
+                    preview.style.backgroundImage = `url(${userData.profilePicture})`;
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                    preview.textContent = '';
+                } else {
+                    preview.textContent = userData.displayName.charAt(0).toUpperCase();
+                    preview.style.backgroundImage = 'none';
+                }
+            }
+            document.getElementById('settingsModal').classList.add('active');
+        };
+
+        window.closeSettingsModal = () => {
+            document.getElementById('settingsModal').classList.remove('active');
+            window.selectedProfilePicture = null;
+            // Clear password fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        };
+
+        window.toggleNotifications = async () => {
+            const isEnabled = document.getElementById('notificationToggle').checked;
+            
+            if (isEnabled) {
+                // Request permission if enabling
+                const granted = await requestNotificationPermission();
+                if (!granted) {
+                    // If permission denied, uncheck the toggle
+                    document.getElementById('notificationToggle').checked = false;
+                    alert('Please allow notifications in your browser settings to enable this feature.');
+                    return;
+                }
+            }
+            
+            window.notificationsEnabled = isEnabled;
+        };
+
+        window.changePassword = async () => {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all password fields');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('New password must be at least 6 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            try {
+                // Re-authenticate user with current password
+                const credential = EmailAuthProvider.credential(
+                    auth.currentUser.email,
+                    currentPassword
+                );
+                await reauthenticateWithCredential(auth.currentUser, credential);
+
+                // Update password
+                await updatePassword(auth.currentUser, newPassword);
+
+                alert('Password changed successfully!');
+                
+                // Clear password fields
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } catch (error) {
+                console.error('Change password error:', error);
+                if (error.code === 'auth/wrong-password') {
+                    alert('Current password is incorrect');
+                } else if (error.code === 'auth/too-many-requests') {
+                    alert('Too many failed attempts. Please try again later.');
+                } else {
+                    alert('Failed to change password: ' + error.message);
+                }
+            }
+        };
+
+        window.handleProfilePictureSelect = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (limit to 5MB initial upload)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Please select an image smaller than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Compress the image
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Resize if too large (max 800x800)
+                        const maxSize = 800;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = (height / width) * maxSize;
+                                width = maxSize;
+                            } else {
+                                width = (width / height) * maxSize;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Compress to JPEG with quality 0.7
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        
+                        window.selectedProfilePicture = compressedBase64;
+                        const preview = document.getElementById('settingsPicturePreview');
+                        preview.style.backgroundImage = `url(${compressedBase64})`;
+                        preview.style.backgroundSize = 'cover';
+                        preview.style.backgroundPosition = 'center';
+                        preview.textContent = '';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.saveSettings = async () => {
+            const newName = document.getElementById('settingsName').value.trim();
+            const newEmail = document.getElementById('settingsEmail').value.trim();
+            const notificationsEnabled = document.getElementById('notificationToggle').checked;
+
+            if (!newName || !newEmail) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const updates = {
+                    displayName: newName,
+                    email: newEmail,
+                    notificationsEnabled: notificationsEnabled
+                };
+
+                // Add profile picture if selected (stored as base64)
+                if (window.selectedProfilePicture) {
+                    updates.profilePicture = window.selectedProfilePicture;
+                }
+
+                // Update Firestore
+                await updateDoc(doc(db, 'users', auth.currentUser.uid), updates);
+
+                // Update email in Firebase Auth if changed
+                if (newEmail !== auth.currentUser.email) {
+                    await updateEmail(auth.currentUser, newEmail);
+                }
+
+                // Update local notification setting
+                window.notificationsEnabled = notificationsEnabled;
+
+                alert('Settings saved successfully!');
+                closeSettingsModal();
+                
+                // Refresh the UI
+                const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('profileName').textContent = userData.displayName;
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    if (userData.profilePicture) {
+                        profileAvatar.style.backgroundImage = `url(${userData.profilePicture})`;
+                        profileAvatar.style.backgroundSize = 'cover';
+                        profileAvatar.style.backgroundPosition = 'center';
+                        profileAvatar.textContent = '';
+                    } else {
+                        profileAvatar.textContent = userData.displayName.charAt(0).toUpperCase();
+                        profileAvatar.style.backgroundImage = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Save settings error:', error);
+                if (error.code === 'auth/requires-recent-login') {
+                    alert('For security, please log out and log back in to change your email.');
+                } else {
+                    alert('Failed to save settings: ' + error.message);
+                }
+            }
+        };
+
+        // Go back to conversations list (mobile)
+        window.goBackToConversations = () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.remove('hide-mobile');
+                document.querySelector('.chat-area').classList.add('hide-mobile');
+                document.getElementById('emptyChatState').style.display = 'flex';
+                document.getElementById('chatContainer').style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
