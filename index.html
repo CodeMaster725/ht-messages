@@ -1050,7 +1050,7 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script type="module">
+    <script type="module" hidden>
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, getDocs, setDoc, doc, getDoc, updateDoc, serverTimestamp, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -2350,4 +2350,5 @@
         };
     </script>
 </body>
+
 </html>
